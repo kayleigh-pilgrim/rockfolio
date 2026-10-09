@@ -1,5 +1,8 @@
 const path = require('node:path');
-const fs = require('node:fs');
+const stoneRoutes = require('./routes/stones');
+const createSpaFallback = require('./middleware/spa-fallback');
+const errorHandler = require('./middleware/error-handler');
+const { apiNotFound, notFound } = require('./middleware/not-found');
 
 require('dotenv').config({
   path: path.join(__dirname, '.env'),
@@ -20,57 +23,20 @@ app.disable('x-powered-by');
 app.use(express.json({ limit: '1mb' }));
 
 // API routes come before frontend serving.
-app.get('/api/health', (_req, res) => {
-  res.json({ message: 'OK' });
-});
+app.use('/api/stones', stoneRoutes);
 
 // Unknown API routes must not receive the React HTML fallback.
-app.use('/api', (_req, res) => {
-  res.status(404).json({ error: 'Unknown API endpoint' });
-});
+app.use('/api', apiNotFound);
 
 app.use(express.static(guiDirectory));
 
 // Support client-side routes when a frontend build exists.
 // Express 5 requires a named wildcard; braces include the root path.
-app.get('/{*path}', (req, res, next) => {
-  if (!req.accepts('html') || !fs.existsSync(indexFile)) {
-    return next();
-  }
+app.get('/{*path}', createSpaFallback(indexFile));
 
-  return res.sendFile(indexFile);
-});
+app.use(notFound);
 
-app.use((_req, res) => {
-  res.status(404).json({ error: 'Unknown endpoint' });
-});
-
-// Keep all four arguments: Express uses the signature to identify this.
-app.use((err, _req, res, next) => {
-  if (res.headersSent) {
-    return next(err);
-  }
-
-  console.error(err);
-
-  if (err.type === 'entity.parse.failed') {
-    return res.status(400).json({ error: 'Invalid JSON' });
-  }
-
-  if (err.type === 'entity.too.large') {
-    return res.status(413).json({ error: 'Request body too large' });
-  }
-
-  if (err.name === 'ValidationError') {
-    return res.status(400).json({ error: 'Validation error' });
-  }
-
-  if (err.name === 'CastError') {
-    return res.status(400).json({ error: 'Invalid ID' });
-  }
-
-  return res.status(500).json({ error: 'Internal server error' });
-});
+app.use(errorHandler);
 
 const server = app.listen(port, () => {
   console.info(`Server is running on http://localhost:${port}`);
