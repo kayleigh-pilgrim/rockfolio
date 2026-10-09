@@ -1,0 +1,11 @@
+**/node_modules/
+**/dist/
+**/build/
+**/coverage/
+backend/gui/
+**/.vite/
+**/.env
+**/.env.*
+**/package-lock.json
+**/*.log
+.git/

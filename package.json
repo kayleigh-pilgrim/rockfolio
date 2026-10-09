@@ -1,0 +1,33 @@
+{
+  "name": "rockfolio",
+  "version": "0.0.1",
+  "description": "",
+  "scripts": {
+    "dev": "concurrently --kill-others-on-fail --names API,WEB \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "start": "npm --prefix backend start",
+    "build": "npm --prefix frontend run build && node scripts/copy-ui.cjs",
+    "lint": "npm --prefix backend run lint && npm --prefix frontend run lint",
+    "lint:fix": "npm --prefix backend run lint:fix && npm --prefix frontend run lint:fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "check": "npm run lint && npm run format:check",
+    "lf": "npm run lint:fix && npm run format"
+  },
+  "keywords": [],
+  "type": "commonjs",
+  "license": "MIT",
+  "author": {
+    "name": "Kayleigh Pilgrim",
+    "email": "kayleigh@kayleighpilgrim.net"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "private": true,
+  "devDependencies": {
+    "concurrently": "^9.2.5",
+    "prettier": "^3.9.9"
+  }
+}
