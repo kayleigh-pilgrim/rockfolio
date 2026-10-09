@@ -20,8 +20,8 @@ app.disable('x-powered-by');
 app.use(express.json({ limit: '1mb' }));
 
 // API routes come before frontend serving.
-app.get('/api/hello', (_req, res) => {
-  res.json({ message: 'Hello World from Express!' });
+app.get('/api/health', (_req, res) => {
+  res.json({ message: 'OK' });
 });
 
 // Unknown API routes must not receive the React HTML fallback.

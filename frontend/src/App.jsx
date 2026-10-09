@@ -1,50 +1,41 @@
-import { useState } from 'react';
+import { Plus, Search } from 'lucide-react';
+import Header from './components/header/Header';
+import Footer from './components/footer/Footer';
 
 export default function App() {
-  const [message, setMessage] = useState('');
-  const [loading, setLoading] = useState(false);
-
-  async function checkBackend() {
-    setLoading(true);
-    setMessage('');
-
-    try {
-      const response = await fetch('/api/hello');
-
-      if (!response.ok) {
-        throw new Error(`Request failed: ${response.status}`);
-      }
-
-      const data = await response.json();
-      setMessage(data.message);
-    } catch (err) {
-      console.error(err);
-      setMessage('Could not connect to the backend.');
-    } finally {
-      setLoading(false);
-    }
-  }
-
   return (
-    <main className="min-h-screen bg-slate-950 px-6 py-16 text-slate-100">
-      <div className="mx-auto max-w-2xl">
-        <h1 className="text-4xl font-bold tracking-tight">React + Express</h1>
+    <div className="flex flex-col justify-between min-h-screen">
+      <div>
+        <Header />
+        <main className="px-4">
+          <header className="space-y-6">
+            <div className="flex items-center gap-12">
+              <div className="flex items-center gap-1">
+                <h2 className="text-3xl font-medium tracking-tight">Your crystal collection</h2>
+              </div>
 
-        <p className="mt-4 text-slate-400">Your frontend is ready—with Tailwind.</p>
+              <div className="flex items-center gap-4">
+                <button
+                  type="button"
+                  className="inline-flex items-center gap-2 rounded-lg bg-violet-700 px-4 py-2 font-medium text-white hover:bg-violet-800"
+                >
+                  <Plus aria-hidden="true" className="size-5" />
+                  Add crystal
+                </button>
 
-        <button
-          type="button"
-          onClick={checkBackend}
-          disabled={loading}
-          className="mt-6 cursor-pointer rounded-lg bg-indigo-600 px-4 py-3 font-semibold transition-colors hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-400 disabled:cursor-wait disabled:opacity-50"
-        >
-          {loading ? 'Connecting…' : 'Check backend connection'}
-        </button>
-
-        <p role="status" className="mt-4 text-sm text-slate-300">
-          {message}
-        </p>
+                <button
+                  type="button"
+                  aria-label="Search collection"
+                  className="rounded-lg border border-slate-300 p-2 text-slate-700 hover:bg-slate-100"
+                >
+                  <Search aria-hidden="true" className="size-5" />
+                </button>
+              </div>
+            </div>
+          </header>
+        </main>
       </div>
-    </main>
+      <Footer />
+    </div>
   );
 }
