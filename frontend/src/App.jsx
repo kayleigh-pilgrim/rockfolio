@@ -1,41 +1,59 @@
-import { Plus, Search } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import AddStone from './components/dashboard/AddStone';
+import ListStones from './components/dashboard/ListStones';
+import FilterInput from './components/forms/FilterInput';
 import Header from './components/header/Header';
 import Footer from './components/footer/Footer';
+import Notification from './components/notifications/Notification';
+import stonesService from './services/stones';
+import Section from './components/dashboard/Section';
 
 export default function App() {
+  const [stones, setStones] = useState(null);
+  const [stoneFilter, setStoneFilter] = useState('');
+  const [notification, setNotification] = useState({
+    message: '',
+    type: '',
+  });
+
+  useEffect(() => {
+    stonesService
+      .getAll()
+      .then((stones) => setStones(stones))
+      .catch((error) => {
+        setNotification({
+          message: `Failed to fetch stones: ${error.response?.data?.error || error.message}`,
+          type: 'error',
+        });
+      });
+    setTimeout(() => {
+      setNotification({
+        message: '',
+        type: '',
+      });
+    }, 5000);
+  }, []);
+
+  if (!stones) return <p>Loading...</p>;
+
+  const filteredStones = stones
+    .filter((stone) => stone.name.toLowerCase().includes(stoneFilter.toLowerCase()))
+    .sort((a, b) => a.name.localeCompare(b.name));
+
   return (
     <div className="flex flex-col justify-between min-h-screen">
       <div>
         <Header />
-        <main className="px-4">
-          <header className="space-y-6">
-            <div className="flex items-center gap-12">
-              <div className="flex items-center gap-1">
-                <h2 className="text-3xl font-medium tracking-tight">Your crystal collection</h2>
-              </div>
-
-              <div className="flex items-center gap-4">
-                <button
-                  type="button"
-                  className="inline-flex items-center gap-2 rounded-lg bg-violet-700 px-4 py-2 font-medium text-white hover:bg-violet-800"
-                >
-                  <Plus aria-hidden="true" className="size-5" />
-                  Add crystal
-                </button>
-
-                <button
-                  type="button"
-                  aria-label="Search collection"
-                  className="rounded-lg border border-slate-300 p-2 text-slate-700 hover:bg-slate-100"
-                >
-                  <Search aria-hidden="true" className="size-5" />
-                </button>
-              </div>
-            </div>
-          </header>
+        <main className="px-4 grid grid-cols-3 gap-4">
+          <Section title="Rocks">
+            <AddStone setStones={setStones} stones={stones} setNotification={setNotification} />
+            <FilterInput filter={stoneFilter} setFilter={setStoneFilter} />
+            <ListStones stones={filteredStones} setStones={setStones} setNotification={setNotification} />
+          </Section>
         </main>
       </div>
       <Footer />
+      <Notification message={notification.message} type={notification.type} />
     </div>
   );
 }

@@ -1,0 +1,6 @@
+POST http://localhost:3002/api/stones
+Content-Type: application/json
+
+{
+  "name": "Amethyst"
+}

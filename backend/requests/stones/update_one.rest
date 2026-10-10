@@ -1,0 +1,6 @@
+PUT http://localhost:3002/api/stones/6ac9f5639b844ace863c3416
+Content-Type: application/json
+
+{
+  "name": "Moonstone"
+}

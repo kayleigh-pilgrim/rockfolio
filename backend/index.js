@@ -22,20 +22,22 @@ if (!Number.isInteger(port) || port < 1 || port > 65535) {
 app.disable('x-powered-by');
 app.use(express.json({ limit: '1mb' }));
 
-// API routes come before frontend serving.
+// API routes before frontend
 app.use('/api/stones', stoneRoutes);
 
-// Unknown API routes must not receive the React HTML fallback.
+// Unknown API routes
 app.use('/api', apiNotFound);
 
+// React frontend
 app.use(express.static(guiDirectory));
 
-// Support client-side routes when a frontend build exists.
-// Express 5 requires a named wildcard; braces include the root path.
+// Support client-side routes when a frontend build exists
 app.get('/{*path}', createSpaFallback(indexFile));
 
+// Page not found
 app.use(notFound);
 
+// Error handling middleware
 app.use(errorHandler);
 
 const server = app.listen(port, () => {
